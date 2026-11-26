@@ -4,7 +4,9 @@ Turn a codebase or a hard topic into handwritten study notes with hand-drawn dia
 Every claim about code points at a real file and line, and a script checks it before
 the page is drawn.
 
-**Status:** early work. Not ready to install yet.
+**Status:** early work. A first working version of the skill is in `skills/handinked/`
+(renderer, three themes, five diagram kinds, lint, citation check, an experimental
+personal mode and interview-prep rules). Not packaged or released yet.
 
 <p>
   <img src="docs/preview/page-notebook.png" width="32%" alt="Notebook theme: how git stores a file">
