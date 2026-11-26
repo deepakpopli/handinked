@@ -1,0 +1,157 @@
+/* handinked.css: paper, ink and layout.
+   Every line of text is exactly one rule tall (--L). The @font-face rules give
+   all fonts the same metrics, so the baseline sits at --B from the top of each
+   line and the rules drawn at --B line up with the text. */
+
+@font-face { font-family: 'Caveat'; src: url('fonts/Caveat-VF.ttf'); font-weight: 400 700; size-adjust: 113.7%; ascent-override: 70.4%; descent-override: 17.6%; line-gap-override: 0%; }
+@font-face { font-family: 'Kalam'; src: url('fonts/Kalam-Regular.ttf'); font-weight: 400; size-adjust: 97.5%; ascent-override: 82.1%; descent-override: 20.5%; line-gap-override: 0%; }
+@font-face { font-family: 'Kalam'; src: url('fonts/Kalam-Bold.ttf'); font-weight: 700; size-adjust: 94.2%; ascent-override: 84.9%; descent-override: 21.2%; line-gap-override: 0%; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-VF.ttf'); font-weight: 100 800; size-adjust: 93.8%; ascent-override: 85.3%; descent-override: 21.3%; line-gap-override: 0%; }
+
+:root {
+  --S: 36px;                 /* body font size */
+  --L: 56px;                 /* rule spacing = line height */
+  --body: 'Kalam';
+  --head: 'Caveat';
+  --blue: #1f3d8f;           /* body ink */
+  --black: #26272b;          /* headings and strong words */
+  --red: #c4302b;            /* gotchas and pen marks */
+  --green: #23744a;          /* personal links */
+  --pencil: #6b6b6b;
+  --marker: #ffe14d;
+  --paper: #fbfaf3;
+  --rule: #b9cde2;
+  --margin-rule: #e4a7a7;
+  --dia-ink: #1d2a5b;
+  --tape-bg: #ffffff;
+  --tape-ink: #24292f;
+  --tape-dim: #6e7781;
+}
+body.night {
+  --paper: #0f1012; --blue: #f2f0e8; --black: #ffd84d; --red: #ff7a6b; --green: #7ee0a1;
+  --pencil: #9aa3ad; --marker: #ffd84d; --rule: #23272c; --margin-rule: #5a2e2e;
+  --dia-ink: #f2f0e8; --tape-bg: #262a30; --tape-ink: #e6e6e6; --tape-dim: #9aa3ad;
+}
+body.chalkboard {
+  --paper: #22292a; --blue: #eceee6; --black: #ffe066; --red: #ff8f80; --green: #8fe3ae;
+  --pencil: #a3adb0; --marker: #ffe066; --rule: #2f3839; --margin-rule: #5d3a3a;
+  --dia-ink: #eceee6; --tape-bg: #2d3537; --tape-ink: #e6e6e6; --tape-dim: #a3adb0;
+}
+
+html, body { margin: 0; }
+body { background: #777; }
+body.single { background: var(--paper); }
+
+.page {
+  --B: calc(var(--L) / 2 + var(--S) * 0.3);    /* baseline inside a line */
+  position: relative;
+  box-sizing: border-box;
+  width: 1080px;
+  height: 1350px;
+  margin: 0 auto 24px;
+  padding: calc(var(--L) * 2) 60px var(--L) 160px;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(90deg, transparent 118px, var(--margin-rule) 118px, var(--margin-rule) 120px, transparent 120px),
+    linear-gradient(transparent calc(var(--B) + 1px), var(--rule) calc(var(--B) + 1px),
+      var(--rule) calc(var(--B) + 2.5px), transparent calc(var(--B) + 2.5px));
+  background-size: 100% 100%, 100% var(--L);
+  font: var(--S) / var(--L) var(--body), sans-serif;
+  color: var(--blue);
+  overflow: hidden;
+}
+body.single .page { margin: 0; }
+
+/* Paper grain: an SVG noise texture, no image file. */
+.page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.5 0 0 0 0 0.42 0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+body.night .page::after, body.chalkboard .page::after { mix-blend-mode: screen; opacity: 0.05; }
+
+/* Blocks never add their own spacing: .gap is one empty line. */
+.page p, .page h1, .page h2 { margin: 0; padding: 0; }
+.page .gap { margin-top: var(--L); }
+
+h1, h2 {
+  font-family: var(--head);
+  font-size: var(--size);
+  font-weight: 700;
+  color: var(--black);
+  position: relative;
+  top: calc((var(--S) - var(--size)) * 0.3);
+}
+h1 { --size: 66px; }
+h2 { --size: 48px; }
+
+.black { color: var(--black); }
+.red { color: var(--red); }
+.green { color: var(--green); }
+.pencil { color: var(--pencil); }
+.small { font-size: calc(var(--S) * 0.82); }
+
+/* Jitter spans made by marks.js */
+.w, .g { display: inline-block; transform-origin: 50% var(--B); text-indent: 0; }
+
+/* Room around boxed and circled words so marks do not touch text */
+[data-mark^="pen-box"] { margin: 0 14px; }
+[data-mark^="pen-circle"]:not(.step) { margin: 0 6px; }
+
+/* Lists: wrapped lines hang under the text, not under the number */
+.page .li { padding-left: 1.6em; text-indent: -1.6em; }
+.step, .dash { display: inline-block; width: 1.1em; margin-right: 0.5em; text-indent: 0; text-align: center; font-weight: 700; color: var(--red); }
+
+/* Citations and inline code: printed, so they stay exact */
+.ref { font: 18px/1 'JetBrains Mono', monospace; color: var(--pencil); white-space: nowrap; margin-left: 6px; }
+code { font: 0.74em/1 'JetBrains Mono', monospace; color: var(--black); white-space: nowrap; margin: 0 0.16em 0 0.08em; }
+
+/* Drawing layers made by marks.js */
+.layer { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+.layer.marker { mix-blend-mode: multiply; }
+body.night .layer.marker, body.chalkboard .layer.marker { mix-blend-mode: normal; opacity: 0.32; }
+
+/* Code: a printed snippet taped onto the page */
+.code-taped {
+  position: relative;
+  display: inline-block;
+  margin: 14px 0 0 10px;
+  padding: 14px 22px;
+  font: 20px / 1.5 'JetBrains Mono', monospace;
+  color: var(--tape-ink);
+  white-space: pre;
+  background: var(--tape-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.08);
+  transform: rotate(-0.6deg);
+}
+body.night .code-taped, body.chalkboard .code-taped { box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
+.code-taped .dim { color: var(--tape-dim); }
+.code-taped::before, .code-taped::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  width: 90px;
+  height: 26px;
+  background: rgba(236, 226, 190, 0.75);
+  clip-path: polygon(0 8%, 6% 0, 12% 10%, 20% 2%, 30% 9%, 40% 0, 52% 8%, 63% 1%, 75% 9%,
+    86% 0, 94% 8%, 100% 2%, 100% 92%, 93% 100%, 84% 91%, 72% 99%, 60% 92%, 48% 100%,
+    37% 91%, 25% 99%, 14% 90%, 5% 99%, 0 92%);
+}
+body.night .code-taped::before, body.night .code-taped::after,
+body.chalkboard .code-taped::before, body.chalkboard .code-taped::after { background: rgba(236, 226, 190, 0.35); }
+.code-taped::before { left: -20px; transform: rotate(-28deg); }
+.code-taped::after { right: -20px; transform: rotate(24deg); }
+
+.diagram { padding-top: 16px; }
+.diagram svg { display: block; margin: 0 auto; overflow: visible; }
+.diagram-error { color: var(--red); }
+
+.tag { position: absolute; right: 60px; top: 30px; font: 700 28px/1 'Caveat'; color: var(--pencil); transform: rotate(2deg); }
+.foot { position: absolute; right: 60px; bottom: 16px; font: 700 24px/1 'Caveat'; color: var(--pencil); }
+
+@page { size: 1080px 1350px; margin: 0; }
+@media print { body { background: none; } .page { break-after: page; margin: 0; } }
